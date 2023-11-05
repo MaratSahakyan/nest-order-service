@@ -9,6 +9,7 @@ import { constant } from 'src/common/constant';
 import { ResponseDTO } from 'src/common/dto';
 import { Repository } from 'typeorm';
 import { CustomerEntity } from './entities/customer.entity';
+import { CustomerInput } from './inputs/customer.input';
 
 @Injectable()
 export class CustomersService {
@@ -31,7 +32,7 @@ export class CustomersService {
     return findCustomer;
   }
 
-  async createCustomer(customer: CustomerEntity): Promise<CustomerEntity> {
+  async createCustomer(customer: CustomerInput): Promise<CustomerEntity> {
     const findOneCustomer = await this.customersRepository.findOne({
       where: { username: customer.username },
       select: ['username'],
@@ -46,7 +47,7 @@ export class CustomersService {
 
   async updateCustomer(
     id: string,
-    customer: CustomerEntity,
+    customer: CustomerInput,
   ): Promise<CustomerEntity> {
     const findOneCustomer = this.customersRepository.findOne({
       where: { id },

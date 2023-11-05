@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { ResponseDTO } from 'src/common/dto';
+import { CustomerInput } from './inputs/customer.input';
 
 @Controller('customers')
 export class CustomersController {
@@ -26,14 +27,14 @@ export class CustomersController {
   }
 
   @Post()
-  async create(@Body() customer: CustomerEntity): Promise<CustomerEntity> {
+  async create(@Body() customer: CustomerInput): Promise<CustomerEntity> {
     return await this.customersService.createCustomer(customer);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() customer: CustomerEntity,
+    @Body() customer: CustomerInput,
   ): Promise<CustomerEntity> {
     return await this.customersService.updateCustomer(id, customer);
   }
