@@ -19,4 +19,7 @@ export const constant = {
   ORDER_STATUS_REQ_VALUE:
     'Status must be one of: Pending, Completed, Cancelled.',
   CUSTOMER_ID_REQUIREMENTS: 'Customer ID is not valid.',
+  HASH_SALT_COUNT: 10,
+  USER_DOES_NOT_EXIST: 'The provided username does not exist.',
+  PROVIDED_WRONG_PASSWORD: 'Provided password is in-correct please try again.',
 };

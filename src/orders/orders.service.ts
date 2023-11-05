@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { constant } from 'src/common/constant';
 import { ResponseDTO } from 'src/common/dto';
 import { Repository } from 'typeorm';
-import { OrderEntity } from './entities/order.entities';
+import { OrderEntity } from './entities/order.entity';
 import { OrderInput } from './inputs/order.input';
 
 @Injectable()

@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ResponseDTO } from 'src/common/dto';
-import { OrderEntity } from './entities/order.entities';
+import { OrderEntity } from './entities/order.entity';
 import { OrderInput } from './inputs/order.input';
 import { OrdersService } from './orders.service';
 

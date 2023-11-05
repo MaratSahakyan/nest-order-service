@@ -1,3 +1,4 @@
+import { AuthorizationGuard } from './../guards/authorization.guard';
 import { CustomerEntity } from './entities/customer.entity';
 import {
   Controller,
@@ -7,15 +8,20 @@ import {
   Param,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { ResponseDTO } from 'src/common/dto';
 import { CustomerInput } from './inputs/customer.input';
+import { AuthentificationGuard } from 'src/guards/authentification.guard';
+import { Role } from 'src/decorators/roles.decorator';
 
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
+  @Role('user')
+  @UseGuards(AuthentificationGuard, AuthorizationGuard)
   @Get()
   async findAll(): Promise<CustomerEntity[]> {
     return await this.customersService.findAllCustomers();
