@@ -9,18 +9,20 @@ import {
   Delete,
   Patch,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { ResponseDTO } from 'src/common/dto';
-import { CustomerInput } from './inputs/customer.input';
 import { AuthentificationGuard } from 'src/guards/authentification.guard';
 import { Role } from 'src/decorators/roles.decorator';
+import { CreateCustomerDto } from './dto';
 
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
-  @Role('user')
+  @Role('USER')
   @UseGuards(AuthentificationGuard, AuthorizationGuard)
   @Get()
   async findAll(): Promise<CustomerEntity[]> {
@@ -32,15 +34,16 @@ export class CustomersController {
     return await this.customersService.findByCustomerID(id);
   }
 
-  @Post()
-  async create(@Body() customer: CustomerInput): Promise<CustomerEntity> {
+  @HttpCode(HttpStatus.CREATED)
+  @Post('create')
+  async create(@Body() customer: CreateCustomerDto): Promise<CustomerEntity> {
     return await this.customersService.createCustomer(customer);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body() customer: CustomerInput,
+    @Body() customer: CreateCustomerDto,
   ): Promise<CustomerEntity> {
     return await this.customersService.updateCustomer(id, customer);
   }

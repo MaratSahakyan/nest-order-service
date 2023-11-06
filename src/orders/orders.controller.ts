@@ -3,14 +3,16 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ResponseDTO } from 'src/common/dto';
+import { CreateOrderDto } from './dto';
 import { OrderEntity } from './entities/order.entity';
-import { OrderInput } from './inputs/order.input';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -46,15 +48,16 @@ export class OrdersController {
     return this.ordersService.findCustomerOrderByStatus(customerId, status);
   }
 
-  @Post()
-  async create(@Body() order: OrderInput): Promise<OrderEntity> {
+  @HttpCode(HttpStatus.CREATED)
+  @Post('create')
+  async create(@Body() order: CreateOrderDto): Promise<OrderEntity> {
     return await this.ordersService.createOrder(order);
   }
 
   @Patch(':id')
   async update(
     @Param('id') orderId: string,
-    @Body() order: OrderInput,
+    @Body() order: CreateOrderDto,
   ): Promise<OrderEntity> {
     return await this.ordersService.updateOrder(orderId, order);
   }

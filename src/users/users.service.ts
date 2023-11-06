@@ -1,17 +1,25 @@
 import { UserEntity } from './entities/user.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserInput } from './inputs/user.input';
 import { Repository } from 'typeorm';
 import { constant } from 'src/common/constant';
 import { hashData } from 'src/common/helper';
 import { AuthService } from 'src/auth/auth.service';
+import { TokenTypes } from './types';
+import { SignUpDto } from './dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserInput) private userRepository: Repository<UserEntity>,
-    private readonly authService: AuthService,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
   ) {}
 
   async findOne(username: string): Promise<UserEntity | undefined> {
@@ -20,7 +28,7 @@ export class UsersService {
     });
   }
 
-  async signup(userData: UserInput): Promise<UserEntity> {
+  async signup(userData: SignUpDto): Promise<TokenTypes> {
     const { password, username } = userData;
     const findOneUser = await this.findOne(username);
 
@@ -35,12 +43,11 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    const tokens = await this.authService.getTokens({
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    });
+    const payload = { id: user.id, username: user.username, role: user.role };
 
-    return { ...tokens, ...user };
+    const accessToken = this.authService.createAccessToken(payload);
+    const refreshToken = this.authService.createRefreshToken(payload);
+
+    return { accessToken, refreshToken };
   }
 }

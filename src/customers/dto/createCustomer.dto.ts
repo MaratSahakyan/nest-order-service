@@ -1,7 +1,7 @@
 import { IsString, Length, Matches } from 'class-validator';
 import { constant } from 'src/common/constant';
 
-export class CustomerInput {
+export class CreateCustomerDto {
   @IsString()
   @Length(3, 50, { message: constant.INVALID_FIRST_NAME_RANGE_MESSAGE })
   firstName: string;

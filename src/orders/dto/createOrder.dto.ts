@@ -1,7 +1,7 @@
 import { IsString, IsInt, Min, IsNumber, IsIn, IsUUID } from 'class-validator';
 import { constant } from 'src/common/constant';
 
-export class OrderInput {
+export class CreateOrderDto {
   @IsString()
   name: string;
 

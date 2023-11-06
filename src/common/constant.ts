@@ -22,4 +22,6 @@ export const constant = {
   HASH_SALT_COUNT: 10,
   USER_DOES_NOT_EXIST: 'The provided username does not exist.',
   PROVIDED_WRONG_PASSWORD: 'Provided password is in-correct please try again.',
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token.',
+  WEAK_PASSWORD_MESSAGE: 'Sorry your password is too weak.',
 };

@@ -8,8 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { constant } from 'src/common/constant';
 import { ResponseDTO } from 'src/common/dto';
 import { Repository } from 'typeorm';
+import { CreateOrderDto } from './dto';
 import { OrderEntity } from './entities/order.entity';
-import { OrderInput } from './inputs/order.input';
 
 @Injectable()
 export class OrdersService {
@@ -51,11 +51,14 @@ export class OrdersService {
     return this.ordersRepository.find({ where: { customerId, status } });
   }
 
-  async createOrder(order: OrderInput): Promise<OrderEntity> {
+  async createOrder(order: CreateOrderDto): Promise<OrderEntity> {
     return await this.ordersRepository.save(order);
   }
 
-  async updateOrder(orderId: string, order: OrderInput): Promise<OrderEntity> {
+  async updateOrder(
+    orderId: string,
+    order: CreateOrderDto,
+  ): Promise<OrderEntity> {
     const mainOrder = await this.ordersRepository.findOne({
       where: { id: orderId },
     });

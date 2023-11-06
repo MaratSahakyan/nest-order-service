@@ -1,30 +1,26 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthentificationGuard } from 'src/guards/authentification.guard';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dto/signIn.dto';
+import { LoginDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async login(@Body() loginData: LoginDto) {
+    return this.authService.login(loginData);
   }
+  // async login(@Res() res: Response, @Body() loginData: LoginDto) {
+  //   return this.authService.login(res, loginData);
+  // }
 
-  @UseGuards(AuthentificationGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  refresh(@Body() refreshData: { refreshToken: string }) {
+    return this.authService.refreshTokens(refreshData.refreshToken);
   }
+  // async refresh(@Res() res: Response, @Req() req: Request) {
+  //   return this.authService.refreshTokens(res, req);
+  // }
 }
