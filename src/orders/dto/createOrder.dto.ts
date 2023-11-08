@@ -1,4 +1,4 @@
-import { IsString, IsInt, Min, IsNumber, IsIn, IsUUID } from 'class-validator';
+import { IsIn, IsInt, IsNumber, IsString, IsUUID, Min } from 'class-validator';
 import { constant } from 'src/common/constant';
 
 export class CreateOrderDto {

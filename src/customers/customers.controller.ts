@@ -1,29 +1,29 @@
-import { AuthorizationGuard } from './../guards/authorization.guard';
-import { CustomerEntity } from './entities/customer.entity';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
-  Patch,
-  UseGuards,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { CustomersService } from './customers.service';
 import { ResponseDTO } from 'src/common/dto';
-import { AuthentificationGuard } from 'src/guards/authentification.guard';
 import { Role } from 'src/decorators/roles.decorator';
+import { AuthenticationGuard } from 'src/guards/authentication.guard';
+import { AuthorizationGuard } from './../guards/authorization.guard';
+import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto';
+import { CustomerEntity } from './entities/customer.entity';
 
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Role('USER')
-  @UseGuards(AuthentificationGuard, AuthorizationGuard)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   @Get()
   async findAll(): Promise<CustomerEntity[]> {
     return await this.customersService.findAllCustomers();

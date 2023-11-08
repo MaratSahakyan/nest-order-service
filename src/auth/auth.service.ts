@@ -1,36 +1,54 @@
-import { BadRequestException, forwardRef, Inject } from '@nestjs/common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
-import { compareData } from 'src/common/helper';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { TokensDto } from './dto';
 import { constant } from 'src/common/constant';
+import { compareData } from 'src/common/helper';
+import { UsersService } from 'src/users/users.service';
+import { TokensDto } from './dto';
 import { TokenTypes } from './types';
-import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
+    private configService: ConfigService,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
   ) {}
 
   createAccessToken(tokenData: TokenTypes) {
-    return this.jwtService.sign(tokenData, { expiresIn: '15m' });
+    const expirationTime = Math.floor(Date.now() / 1000) + 15 * 60;
+    return this.jwtService.sign(
+      { ...tokenData, exp: expirationTime },
+      {
+        secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+      },
+    );
   }
 
   createRefreshToken(tokenData: TokenTypes) {
+    const expirationTime = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
     return this.jwtService.sign(
-      { ...tokenData, tokenID: uuid() },
-      { expiresIn: '7d' },
+      { ...tokenData, exp: expirationTime },
+      {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      },
     );
   }
 
   decodeRefreshToken(token: string) {
     try {
-      return this.jwtService.verify(token);
+      return this.jwtService.verify(token, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      });
     } catch (error) {
+      console.log('error', error);
       throw new UnauthorizedException(constant.INVALID_REFRESH_TOKEN);
     }
   }
@@ -40,8 +58,8 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException();
     }
-    const isPassordMatched = await compareData(password, user.password);
-    if (!isPassordMatched) {
+    const isPasswordMatched = await compareData(password, user.password);
+    if (!isPasswordMatched) {
       throw new BadRequestException();
     }
     return { id: user.id, username: user.username, role: user.role };
