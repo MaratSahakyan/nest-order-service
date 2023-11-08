@@ -13,6 +13,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   // app.use(cookieParser());
 
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
   await app.listen(port, () => {
     console.log(`App started on port: ${port}`);
   });

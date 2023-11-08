@@ -29,10 +29,9 @@ export class UsersService {
   }
 
   async updateRefreshTokenInDb(userId: string, refreshToken: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const hashedRefreshToken = await hashData(refreshToken);
     await this.userRepository.update(userId, {
-      refreshToken: refreshToken,
+      refreshToken: hashedRefreshToken,
     });
   }
 
