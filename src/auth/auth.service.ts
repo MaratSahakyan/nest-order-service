@@ -42,13 +42,22 @@ export class AuthService {
     );
   }
 
-  decodeRefreshToken(token: string) {
+  async decodeRefreshToken(token: string) {
     try {
-      return this.jwtService.verify(token, {
+      const decodedToken = this.jwtService.verify(token, {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       });
+
+      const user = await this.usersService.findOne(decodedToken.username);
+
+      // const isTokenValid = await compareData(token, user.refreshToken);
+
+      if (!(token === user.refreshToken)) {
+        throw new UnauthorizedException(constant.INVALID_REFRESH_TOKEN);
+      }
+
+      return { id: user.id, username: user.username, role: user.role };
     } catch (error) {
-      console.log('error', error);
       throw new UnauthorizedException(constant.INVALID_REFRESH_TOKEN);
     }
   }
@@ -73,6 +82,11 @@ export class AuthService {
     const accessToken = this.createAccessToken(userTokenPayload);
     const refreshToken = this.createRefreshToken(userTokenPayload);
 
+    await this.usersService.updateRefreshTokenInDb(
+      userTokenPayload.id,
+      refreshToken,
+    );
+
     // res.cookie('refreshToken', refreshToken, {
     //   httpOnly: true,
     //   secure: true,
@@ -82,12 +96,17 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  refreshTokens(oldRefreshToken): TokensDto {
+  async refreshTokens(oldRefreshToken): Promise<TokensDto> {
     // const oldRefreshToken = req.cookies['refreshToken'];
 
-    const userDecodedToken = this.decodeRefreshToken(oldRefreshToken);
-    const newAccessToken = this.createAccessToken(userDecodedToken);
-    const newRefreshToken = this.createRefreshToken(userDecodedToken);
+    const userDecodedData = await this.decodeRefreshToken(oldRefreshToken);
+    const newAccessToken = this.createAccessToken(userDecodedData);
+    const newRefreshToken = this.createRefreshToken(userDecodedData);
+
+    await this.usersService.updateRefreshTokenInDb(
+      userDecodedData.id,
+      newRefreshToken,
+    );
 
     // res.cookie('refreshToken', newRefreshToken, {
     //   httpOnly: true,

@@ -28,6 +28,9 @@ export class UserEntity {
   })
   role: RolesEnum;
 
+  @Column('varchar', { nullable: true })
+  refreshToken?: string;
+
   @Column()
   @CreateDateColumn()
   createdAt: Date;
