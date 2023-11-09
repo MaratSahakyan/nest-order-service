@@ -1,12 +1,24 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { AuthenticationGuard } from './../guards/authentication.guard';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto, RefreshTokenDto, TokensDto } from './dto';
+import { UserDataType } from './types/userData.type';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -23,6 +35,14 @@ export class AuthController {
   // async login(@Res() res: Response, @Body() loginData: LoginDto) {
   //   return this.authService.login(res, loginData);
   // }
+
+  @UseGuards(AuthenticationGuard)
+  @ApiOkResponse({ description: 'User Data' })
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
+  @Get('my-data')
+  async myData(@Req() req: Request): Promise<UserDataType> {
+    return await this.authService.myData(req);
+  }
 
   @ApiOkResponse({ description: 'Refresh Tokens' })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })

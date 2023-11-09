@@ -1,3 +1,4 @@
+import { UserDataType } from './types/userData.type';
 import {
   BadRequestException,
   forwardRef,
@@ -94,6 +95,22 @@ export class AuthService {
     // });
 
     return { accessToken, refreshToken };
+  }
+
+  async myData(request): Promise<UserDataType> {
+    const token = request.headers.authorization.split(' ')[1];
+
+    const userDecodedData = this.jwtService.verify(token, {
+      secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+    });
+
+    const user = await this.usersService.findOne(userDecodedData.username);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    delete user.password, delete user.refreshToken;
+
+    return user;
   }
 
   async refreshTokens(oldRefreshToken): Promise<TokensDto> {
