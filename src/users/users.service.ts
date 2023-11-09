@@ -55,7 +55,7 @@ export class UsersService {
     const accessToken = this.authService.createAccessToken(payload);
     const refreshToken = this.authService.createRefreshToken(payload);
 
-    await this.updateRefreshTokenInDb(user.id, refreshToken);
+    this.updateRefreshTokenInDb(user.id, refreshToken);
 
     return { accessToken, refreshToken };
   }

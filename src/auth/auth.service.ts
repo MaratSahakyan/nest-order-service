@@ -50,9 +50,9 @@ export class AuthService {
 
       const user = await this.usersService.findOne(decodedToken.username);
 
-      // const isTokenValid = await compareData(token, user.refreshToken);
+      const isTokenValid = await compareData(token, user.refreshToken);
 
-      if (!(token === user.refreshToken)) {
+      if (!isTokenValid) {
         throw new UnauthorizedException(constant.INVALID_REFRESH_TOKEN);
       }
 
