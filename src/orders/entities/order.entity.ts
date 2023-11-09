@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { OrderStatusesEnum } from '../enums/orderStatuses.enum';
 
 @Entity('order')
 export class OrderEntity {
@@ -20,8 +21,12 @@ export class OrderEntity {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
-  @Column({ type: 'enum', enum: ['Pending', 'Completed', 'Cancelled'] })
-  status: string;
+  @Column({
+    type: 'enum',
+    enum: OrderStatusesEnum,
+    default: OrderStatusesEnum.PENDING,
+  })
+  status: OrderStatusesEnum;
 
   @Column()
   customerId: string;

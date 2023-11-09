@@ -10,6 +10,7 @@ import { ResponseDTO } from 'src/common/dto';
 import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto';
 import { OrderEntity } from './entities/order.entity';
+import { OrderStatusesEnum } from './enums/orderStatuses.enum';
 
 @Injectable()
 export class OrdersService {
@@ -22,7 +23,7 @@ export class OrdersService {
     return await this.ordersRepository.find();
   }
 
-  async findOrdersByStatus(status: string): Promise<OrderEntity[]> {
+  async findOrdersByStatus(status: OrderStatusesEnum): Promise<OrderEntity[]> {
     return await this.ordersRepository.find({ where: { status } });
   }
 
@@ -46,7 +47,7 @@ export class OrdersService {
 
   async findCustomerOrderByStatus(
     customerId: string,
-    status: string,
+    status: OrderStatusesEnum,
   ): Promise<OrderEntity[]> {
     return this.ordersRepository.find({ where: { customerId, status } });
   }
