@@ -1,33 +1,50 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ResponseDTO } from 'src/common/dto';
-import { AuthenticationGuard } from 'src/guards/authentication.guard';
-import { AuthorizationGuard } from 'src/guards/authorization.guard';
+import { Pagination } from 'src/pagination/interfaces/pagination.interfaces';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto';
 import { CustomerEntity } from './entities/customer.entity';
 
 @ApiTags('customers')
 @ApiBearerAuth()
-@UseGuards(AuthenticationGuard, AuthorizationGuard)
+// @UseGuards(AuthenticationGuard, AuthorizationGuard)
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Get()
-  async findAll(): Promise<CustomerEntity[]> {
-    return await this.customersService.findAllCustomers();
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+  })
+  async findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<CustomerEntity>> {
+    return this.customersService.findAllCustomers({
+      page,
+      limit: Math.min(100, limit),
+    });
   }
 
   @Get(':id')

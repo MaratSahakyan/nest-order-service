@@ -7,6 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { constant } from 'src/common/constant';
 import { ResponseDTO } from 'src/common/dto';
+import { Pagination } from 'src/pagination/interfaces/pagination.interfaces';
+import { PaginationService } from 'src/pagination/pagination.service';
 import { Repository } from 'typeorm';
 import { CreateCustomerDto } from './dto';
 import { CustomerEntity } from './entities/customer.entity';
@@ -16,10 +18,15 @@ export class CustomersService {
   constructor(
     @InjectRepository(CustomerEntity)
     private customersRepository: Repository<CustomerEntity>,
+    private paginationService: PaginationService,
   ) {}
 
-  async findAllCustomers(): Promise<CustomerEntity[]> {
-    return this.customersRepository.find();
+  async findAllCustomers({ page, limit }): Promise<Pagination<CustomerEntity>> {
+    return await this.paginationService.paginate(this.customersRepository, {
+      page,
+      limit,
+      route: `customers`,
+    });
   }
 
   async findByCustomerID(customerID: string): Promise<CustomerEntity> {

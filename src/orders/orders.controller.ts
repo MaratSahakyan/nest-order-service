@@ -1,17 +1,20 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ResponseDTO } from 'src/common/dto';
+import { Pagination } from 'src/pagination/interfaces/pagination.interfaces';
 import { CreateOrderDto } from './dto';
 import { OrderEntity } from './entities/order.entity';
 import { OrderStatusesEnum } from './enums/orderStatuses.enum';
@@ -22,9 +25,26 @@ import { OrdersService } from './orders.service';
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
   @Get()
-  async findAll(): Promise<OrderEntity[]> {
-    return await this.ordersService.findAllOrders();
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+  })
+  async findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<OrderEntity>> {
+    return await this.ordersService.findAllOrders({
+      page,
+      limit: Math.min(100, limit),
+    });
   }
 
   @Get('status')
@@ -51,13 +71,29 @@ export class OrdersController {
     name: 'customerId',
     type: String,
   })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+  })
   async findAllByCustomerId(
-    @Param('id') customerId: string,
-  ): Promise<OrderEntity[]> {
-    return await this.ordersService.findAllByCustomerId(customerId);
+    @Param('customerId') customerId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<OrderEntity>> {
+    return await this.ordersService.findAllByCustomerId({
+      page,
+      limit,
+      customerId,
+    });
   }
 
-  @Get('customer/:customerId/orders')
+  @Get(':customerId/status')
   @ApiParam({
     name: 'customerId',
     type: String,
@@ -67,11 +103,28 @@ export class OrdersController {
     type: String,
     enum: OrderStatusesEnum,
   })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+  })
   async getCustomerOrders(
     @Param('customerId') customerId: string,
     @Query('status') status: OrderStatusesEnum,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
   ) {
-    return this.ordersService.findCustomerOrderByStatus(customerId, status);
+    return this.ordersService.findCustomerOrderByStatus({
+      customerId,
+      status,
+      page,
+      limit,
+    });
   }
 
   @HttpCode(HttpStatus.CREATED)

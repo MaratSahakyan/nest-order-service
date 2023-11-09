@@ -20,7 +20,7 @@ export class CreateCustomerDto {
 
   @ApiProperty({ type: Date, example: 'YYYY-MM-DD' })
   @IsString()
-  @Matches(/^\d{4}-(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])$/, {
+  @Matches(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/, {
     message: constant.INCORRECT_DOB_FORMAT,
   })
   dob: string;

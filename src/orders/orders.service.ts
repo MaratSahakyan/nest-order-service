@@ -7,6 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { constant } from 'src/common/constant';
 import { ResponseDTO } from 'src/common/dto';
+import { Pagination } from 'src/pagination/interfaces/pagination.interfaces';
+import { PaginationService } from 'src/pagination/pagination.service';
 import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto';
 import { OrderEntity } from './entities/order.entity';
@@ -17,10 +19,15 @@ export class OrdersService {
   constructor(
     @InjectRepository(OrderEntity)
     private ordersRepository: Repository<OrderEntity>,
+    private paginationService: PaginationService,
   ) {}
 
-  async findAllOrders(): Promise<OrderEntity[]> {
-    return await this.ordersRepository.find();
+  async findAllOrders({ page, limit }): Promise<Pagination<OrderEntity>> {
+    return await this.paginationService.paginate(this.ordersRepository, {
+      page,
+      limit,
+      route: `orders`,
+    });
   }
 
   async findOrdersByStatus(status: OrderStatusesEnum): Promise<OrderEntity[]> {
@@ -39,17 +46,31 @@ export class OrdersService {
     return order;
   }
 
-  async findAllByCustomerId(customerId: string): Promise<OrderEntity[]> {
-    return this.ordersRepository.find({
+  async findAllByCustomerId({
+    page,
+    limit,
+    customerId,
+  }): Promise<Pagination<OrderEntity>> {
+    return await this.paginationService.paginate(this.ordersRepository, {
+      page,
+      limit,
+      route: `orders/${customerId}`,
       where: { customerId },
     });
   }
 
-  async findCustomerOrderByStatus(
-    customerId: string,
-    status: OrderStatusesEnum,
-  ): Promise<OrderEntity[]> {
-    return this.ordersRepository.find({ where: { customerId, status } });
+  async findCustomerOrderByStatus({
+    customerId,
+    status,
+    page,
+    limit,
+  }): Promise<Pagination<OrderEntity>> {
+    return await this.paginationService.paginate(this.ordersRepository, {
+      page,
+      limit,
+      route: `orders/${customerId}`,
+      where: { customerId, status },
+    });
   }
 
   async createOrder(order: CreateOrderDto): Promise<OrderEntity> {
