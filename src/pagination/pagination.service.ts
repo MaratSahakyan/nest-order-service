@@ -47,10 +47,7 @@ export class PaginationService {
       currentPage: page,
     };
 
-    const baseUrl = this.configService.get('API_BASE_URL');
-
-    const paginationLinks: IPaginationLinks = this.createPaginationLinks({
-      baseUrl,
+    const paginationLinks: IPaginationLinks = this.generateLinks({
       route,
       limit,
       page,
@@ -68,45 +65,34 @@ export class PaginationService {
     queryBuilder: SelectQueryBuilder<Entity>,
     conditions: FindOptions<Entity> | FindManyOptions<Entity>['where'] = {},
   ): void {
-    if (Array.isArray(conditions)) {
-      conditions.forEach((condition) => {
-        Object.entries(condition).forEach(([key, value]) => {
-          if (value !== undefined) {
-            queryBuilder.andWhere(`${queryBuilder.alias}.${key} = :${key}`, {
-              [key]: value,
-            });
-          }
-        });
-      });
-    } else {
-      Object.entries(conditions).forEach(([key, value]) => {
+    const conditionsArray = Array.isArray(conditions)
+      ? conditions
+      : [conditions];
+
+    conditionsArray.forEach((condition) => {
+      Object.entries(condition).forEach(([key, value]) => {
         if (value !== undefined) {
           queryBuilder.andWhere(`${queryBuilder.alias}.${key} = :${key}`, {
             [key]: value,
           });
         }
       });
-    }
+    });
   }
 
-  createPaginationLinks({ baseUrl, route, limit, page, totalPages }) {
-    const first = `${baseUrl}/${route}?page=1&limit=${limit}`;
+  generateLinks({ route, limit, page, totalPages }) {
+    const baseUrl = this.configService.get('API_BASE_URL');
 
-    const previous =
-      page > 1 ? `${baseUrl}/${route}?page=${page - 1}&limit=${limit}` : '';
-
-    const next =
-      page < totalPages
-        ? `${baseUrl}/${route}?page=${page + 1}&limit=${limit}`
-        : '';
-
-    const last = `${baseUrl}/${route}?page=${totalPages}&limit=${limit}`;
-
-    return {
-      first,
-      previous,
-      next,
-      last,
+    const generateLink = (pageNumber) => {
+      const params = new URLSearchParams({ page: pageNumber, limit });
+      return `${baseUrl}/${route}?${params.toString()}`;
     };
+
+    const first = generateLink(1);
+    const previous = page > 1 ? generateLink(page - 1) : '';
+    const next = page < totalPages ? generateLink(page + 1) : '';
+    const last = generateLink(totalPages);
+
+    return { first, previous, next, last };
   }
 }
