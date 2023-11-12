@@ -153,4 +153,15 @@ export class OrdersController {
   async delete(@Param('id') orderId: string): Promise<ResponseDTO> {
     return await this.ordersService.deleteOrder(orderId);
   }
+
+  @Delete('delete/:customerId')
+  @ApiParam({
+    name: 'customerId',
+    type: String,
+  })
+  async deleteOrdersByCustomerId(
+    @Param('customerId') customerId: string,
+  ): Promise<ResponseDTO> {
+    return await this.ordersService.deleteOrdersByCustomerId(customerId);
+  }
 }

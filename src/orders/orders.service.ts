@@ -131,4 +131,32 @@ export class OrdersService {
         };
       });
   }
+
+  async deleteOrdersByCustomerId(customerId: string): Promise<ResponseDTO> {
+    try {
+      const deleteResult = await this.ordersRepository
+        .createQueryBuilder()
+        .delete()
+        .from(OrderEntity)
+        .where('customerId = :customerId', { customerId })
+        .execute();
+
+      if (deleteResult.affected) {
+        return {
+          status: HttpStatus.OK,
+          message: constant.ORDERS_DELETED,
+        };
+      } else {
+        return {
+          status: HttpStatus.NOT_FOUND,
+          message: constant.NO_ORDERS_FOUND,
+        };
+      }
+    } catch (error) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: constant.ORDER_DELETION_FAIL,
+      };
+    }
+  }
 }

@@ -24,4 +24,7 @@ export const constant = {
   PROVIDED_WRONG_PASSWORD: 'Provided password is in-correct please try again.',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token.',
   WEAK_PASSWORD_MESSAGE: 'Sorry your password is too weak.',
+  ORDERS_DELETED: 'Orders SuccessFuly deleted.',
+  NO_ORDERS_FOUND: 'The customer did not have any order.',
+  ORDER_DELETION_FAIL: 'Fail during delete order.',
 };
