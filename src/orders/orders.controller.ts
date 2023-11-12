@@ -93,12 +93,12 @@ export class OrdersController {
     });
   }
 
-  @Get(':customerId/status')
+  @Get(':customerId/:status')
   @ApiParam({
     name: 'customerId',
     type: String,
   })
-  @ApiQuery({
+  @ApiParam({
     name: 'status',
     type: String,
     enum: OrderStatusesEnum,
@@ -115,7 +115,7 @@ export class OrdersController {
   })
   async getCustomerOrders(
     @Param('customerId') customerId: string,
-    @Query('status') status: OrderStatusesEnum,
+    @Param('status') status: OrderStatusesEnum,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
   ) {
