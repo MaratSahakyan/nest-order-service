@@ -29,9 +29,9 @@ export class UsersService {
   }
 
   async updateRefreshTokenInDb(userId: string, refreshToken: string) {
-    const hashedRefreshToken = await hashData(refreshToken);
+    // const hashedRefreshToken = await hashData(refreshToken);
     await this.userRepository.update(userId, {
-      refreshToken: hashedRefreshToken,
+      refreshToken,
     });
   }
 

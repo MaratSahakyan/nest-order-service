@@ -1,4 +1,3 @@
-import { UserDataType } from './types/userData.type';
 import {
   BadRequestException,
   forwardRef,
@@ -13,6 +12,7 @@ import { compareData } from 'src/common/helper';
 import { UsersService } from 'src/users/users.service';
 import { TokensDto } from './dto';
 import { TokenTypes } from './types';
+import { UserDataType } from './types/userData.type';
 
 @Injectable()
 export class AuthService {
@@ -51,9 +51,9 @@ export class AuthService {
 
       const user = await this.usersService.findOne(decodedToken.username);
 
-      const isTokenValid = await compareData(token, user.refreshToken);
+      // const isTokenValid = await compareData(token, user.refreshToken);
 
-      if (!isTokenValid) {
+      if (token !== user.refreshToken) {
         throw new UnauthorizedException(constant.INVALID_REFRESH_TOKEN);
       }
 
