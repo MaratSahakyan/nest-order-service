@@ -1,4 +1,3 @@
-import { AuthenticationGuard } from './../guards/authentication.guard';
 import {
   Body,
   Controller,
@@ -16,6 +15,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { AuthenticationGuard } from './../guards/authentication.guard';
 import { AuthService } from './auth.service';
 import { LoginDto, RefreshTokenDto, TokensDto } from './dto';
 import { UserDataType } from './types/userData.type';

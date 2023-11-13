@@ -30,8 +30,19 @@ export class OrdersService {
     });
   }
 
-  async findOrdersByStatus(status: OrderStatusesEnum): Promise<OrderEntity[]> {
-    return await this.ordersRepository.find({ where: { status } });
+  async findOrdersByStatus(
+    status: OrderStatusesEnum,
+    page: number,
+    limit: number,
+  ): Promise<Pagination<OrderEntity>> {
+    console.log('page', page);
+    console.log('limit', limit);
+    return await this.paginationService.paginate(this.ordersRepository, {
+      page,
+      limit,
+      route: `orders/status?status=${status}`,
+      where: { status },
+    });
   }
 
   async findByOrderId(orderId: string): Promise<OrderEntity> {

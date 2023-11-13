@@ -53,8 +53,22 @@ export class OrdersController {
     type: String,
     enum: OrderStatusesEnum,
   })
-  async findOrdersByStatus(@Query('status') status: OrderStatusesEnum) {
-    return this.ordersService.findOrdersByStatus(status);
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    required: false,
+  })
+  async findOrdersByStatus(
+    @Query('status') status: OrderStatusesEnum,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ) {
+    return this.ordersService.findOrdersByStatus(status, page, limit);
   }
 
   @Get(':id')
