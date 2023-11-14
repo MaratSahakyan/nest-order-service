@@ -4,6 +4,7 @@ import {
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
 import { config } from 'dotenv';
+import { join } from 'path';
 import { DataSource } from 'typeorm';
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
@@ -18,13 +19,13 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     username: configService.get<string>('POSTGRES_USER'),
     password: configService.get<string>('POSTGRES_PASSWORD'),
     database: configService.get<string>('POSTGRES_DB'),
-    entities: [`${__dirname}src/**/**/*.entity.{ts,js}`],
-    migrations: [`${__dirname}src/migrations/*.{ts,js}`],
+    entities: [join(__dirname, '**', '**', '*.entity.{ts,js}')],
+    migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
     autoLoadEntities: true,
     extra: {
       charset: 'utf8mb4_unicode_ci',
     },
-    synchronize: configService.get<boolean>('DATABASE_SYNCHRONIZE'),
+    synchronize: configService.get<boolean>('DATABASE_SYNCHRONIZE') ?? false,
     logging: true,
   }),
 };
@@ -40,8 +41,8 @@ export const typeOrmConfig = new DataSource({
   username: configService.get<'string'>('POSTGRES_USER'),
   password: configService.get<'string'>('POSTGRES_PASSWORD'),
   database: configService.get<'string'>('POSTGRES_DB'),
-  entities: ['src/**/**/*.entity.{ts,js}'],
-  migrations: ['src/migrations/*.{ts,js}'],
+  entities: [join(__dirname, '**', '**', '*.entity.{ts,js}')],
+  migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
   extra: {
     charset: 'utf8mb4_unicode_ci',
   },
