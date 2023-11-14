@@ -12,12 +12,12 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
   useFactory: async (
     configService: ConfigService,
   ): Promise<TypeOrmModuleOptions> => ({
-    type: configService.get<'postgres'>('DATABASE_TYPE'),
-    host: configService.get<string>('DATABASE_HOST'),
-    port: configService.get<number>('DATABASE_PORT') || 5432,
-    username: configService.get<string>('DATABASE_USERNAME'),
-    password: configService.get<string>('DATABASE_PASSWORD'),
-    database: configService.get<string>('DATABASE_NAME'),
+    type: 'postgres',
+    host: configService.get<string>('POSTGRES_HOST'),
+    port: configService.get<number>('POSTGRES_PORT') || 5432,
+    username: configService.get<string>('POSTGRES_USER'),
+    password: configService.get<string>('POSTGRES_PASSWORD'),
+    database: configService.get<string>('POSTGRES_DB'),
     entities: [`${__dirname}src/**/**/*.entity.{ts,js}`],
     migrations: [`${__dirname}src/migrations/*.{ts,js}`],
     autoLoadEntities: true,
@@ -34,12 +34,12 @@ config();
 const configService = new ConfigService();
 
 export const typeOrmConfig = new DataSource({
-  type: configService.get<'postgres'>('DATABASE_TYPE'),
-  host: configService.get<'string'>('DATABASE_HOST'),
-  port: parseInt(configService.get<'number'>('DATABASE_PORT')) || 5432,
-  username: configService.get<'string'>('DATABASE_USERNAME'),
-  password: configService.get<'string'>('DATABASE_PASSWORD'),
-  database: configService.get<'string'>('DATABASE_NAME'),
+  type: 'postgres',
+  host: configService.get<'string'>('POSTGRES_HOST'),
+  port: parseInt(configService.get<'number'>('POSTGRES_PORT')) || 5432,
+  username: configService.get<'string'>('POSTGRES_USER'),
+  password: configService.get<'string'>('POSTGRES_PASSWORD'),
+  database: configService.get<'string'>('POSTGRES_DB'),
   entities: ['src/**/**/*.entity.{ts,js}'],
   migrations: ['src/migrations/*.{ts,js}'],
   extra: {
